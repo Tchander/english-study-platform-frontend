@@ -1,4 +1,4 @@
-@import './reset.scss';
+@use './reset.scss' as *;
 
 // Дополнительные глобальные стили
 .container {

@@ -3,6 +3,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "esModuleInterop": true,
+    "moduleResolution": "nodenext",
+    "target": "esnext",
+    "module": "nodenext",
   }
 }
