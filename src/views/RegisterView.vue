@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import RegisterForm from '@/components/auth/RegisterForm.vue';
+import RegisterForm from '@/components/auth/RegisterForm/RegisterForm.vue';
 
 const router = useRouter();
 

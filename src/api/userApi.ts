@@ -1,30 +1,32 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_DOMAIN = 'http://localhost:3000';
 
-export interface User {
+const BASE_URL = '/auth';
+
+export type User = {
   id: number;
   email: string;
   role: 'student' | 'teacher';
-}
+};
 
-export interface LoginData {
+export type LoginData = {
   email: string;
   password: string;
-}
+};
 
-export interface RegisterData extends LoginData {
+export type RegisterData = LoginData & {
   role: 'student' | 'teacher';
-}
+};
 
-export interface AuthResponse {
+export type AuthResponse = {
   access_token: string;
   user: User;
-}
+};
 
 // Создаем экземпляр axios с базовыми настройками
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_BASE_DOMAIN,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -53,17 +55,17 @@ api.interceptors.response.use(
 
 export const userApi = {
   async login(loginData: LoginData): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('/auth/login', loginData);
+    const response = await api.post<AuthResponse>(`${BASE_URL}/login`, loginData);
     return response.data;
   },
 
   async register(registerData: RegisterData): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('/auth/register', registerData);
+    const response = await api.post<AuthResponse>(`${BASE_URL}/register`, registerData);
     return response.data;
   },
 
   async getProfile(): Promise<User> {
-    const response = await api.get<User>('/auth/profile');
+    const response = await api.get<User>(`${BASE_URL}/profile`);
     return response.data;
   },
 };

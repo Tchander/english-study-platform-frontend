@@ -1,6 +1,6 @@
 <template>
   <v-form @submit.prevent="handleSubmit">
-    <v-card-title class="text-h5 text-center mb-4">Регистрация</v-card-title>
+    <v-card-title class="text-h5 text-center mb-4">Вход в систему</v-card-title>
 
     <AppInput
       v-model="form.email"
@@ -19,15 +19,6 @@
       class="mt-4"
     />
 
-    <AppSelect
-      v-model="form.role"
-      label="Роль"
-      :items="roleOptions"
-      :error="errors.role"
-      required
-      class="mt-4"
-    />
-
     <AppButton
       type="submit"
       color="primary"
@@ -35,16 +26,16 @@
       block
       class="mt-6"
     >
-      Зарегистрироваться
+      Войти
     </AppButton>
 
     <div class="text-center mt-4">
       <AppButton
         variant="text"
         color="secondary"
-        @click="$emit('go-to-login')"
+        @click="$emit('go-to-register')"
       >
-        Назад к входу
+        Зарегистрироваться
       </AppButton>
     </div>
   </v-form>
@@ -56,11 +47,10 @@ import { useUserStore } from '@/stores/user';
 
 import AppInput from '@/components/ui/AppInput.vue';
 import AppButton from '@/components/ui/AppButton.vue';
-import AppSelect from '@/components/ui/AppSelect.vue';
 
-interface Emits {
+type Emits = {
   (e: 'success'): void;
-  (e: 'go-to-login'): void;
+  (e: 'go-to-register'): void;
 }
 
 const emit = defineEmits<Emits>();
@@ -68,21 +58,14 @@ const emit = defineEmits<Emits>();
 const userStore = useUserStore();
 const isLoading = ref(false);
 
-const roleOptions = [
-  { title: 'Ученик', value: 'student' },
-  { title: 'Учитель', value: 'teacher' },
-];
-
 const form = reactive({
   email: '',
   password: '',
-  role: 'student' as 'student' | 'teacher',
 });
 
 const errors = reactive({
   email: '',
   password: '',
-  role: '',
 });
 
 const validateForm = (): boolean => {
@@ -91,7 +74,6 @@ const validateForm = (): boolean => {
   // Сбрасываем ошибки
   errors.email = '';
   errors.password = '';
-  errors.role = '';
 
   if (!form.email) {
     errors.email = 'Email обязателен';
@@ -109,11 +91,6 @@ const validateForm = (): boolean => {
     isValid = false;
   }
 
-  if (!form.role) {
-    errors.role = 'Роль обязательна';
-    isValid = false;
-  }
-
   return isValid;
 };
 
@@ -122,7 +99,7 @@ const handleSubmit = async () => {
 
   try {
     isLoading.value = true;
-    await userStore.register(form.email, form.password, form.role);
+    await userStore.login(form.email, form.password);
     emit('success');
   } catch (error) {
     // Ошибка уже обработана в store

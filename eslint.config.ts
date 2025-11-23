@@ -1,11 +1,12 @@
 // eslint.config.mjs
-import pluginVue from 'eslint-plugin-vue'
+import pluginVue from 'eslint-plugin-vue';
 import {
   defineConfigWithVueTs,
   vueTsConfigs,
   configureVueProject,
-} from '@vue/eslint-config-typescript'
-import js from '@eslint/js'
+} from '@vue/eslint-config-typescript';
+import js from '@eslint/js';
+import globals from 'globals';
 
 // Optional: configure the Vue project to adjust the strictness of the rulesets or speed up linting.
 configureVueProject({
@@ -56,10 +57,10 @@ configureVueProject({
   // Our config helper would resolve and parse all the `.vue` files under `rootDir`,
   // and only apply the loosened rules to the files that do need them.
   rootDir: import.meta.dirname,
-})
+});
 
 export default defineConfigWithVueTs(
-  pluginVue.configs["flat/essential"],
+  pluginVue.configs['flat/essential'],
 
   // We STRONGLY RECOMMEND you to start with `recommended` or `recommendedTypeChecked`.
   // But if you are determined to configure all rules by yourself,
@@ -68,6 +69,15 @@ export default defineConfigWithVueTs(
 
   // Базовые правила ESLint
   js.configs.recommended,
+
+  // Глобалы браузера для ESLint (window, document, localStorage и др.)
+  {
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+      },
+    },
+  },
 
   // Настройки для TypeScript и Vue файлов
   {
@@ -96,4 +106,4 @@ export default defineConfigWithVueTs(
       }]
     }
   }
-)
+);
