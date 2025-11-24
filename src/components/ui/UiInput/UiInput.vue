@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import { UiInputProps, UiInputModelValue } from './types';
 
-const { error } = defineProps<UiInputProps>()
+const { error } = defineProps<UiInputProps>();
 
-const modelValue = defineModel<UiInputModelValue>()
+const modelValue = defineModel<UiInputModelValue>();
 </script>

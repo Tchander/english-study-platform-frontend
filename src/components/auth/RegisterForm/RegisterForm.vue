@@ -53,7 +53,7 @@
 import { ref } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useValidation } from '@/composables/useValidation';
-import { registerSchema, type RegisterFormData } from '../authSchemas'
+import { registerSchema, type RegisterFormData } from '../authSchemas';
 
 import UiInput from '@/components/ui/UiInput';
 import UiButton from '@/components/ui/UiButton';

@@ -41,7 +41,7 @@ const userRoles = {
   'student': 'Ученик',
   'teacher': 'Учитель',
   'super-admin': 'Главный администратор'
-}
+};
 
 onMounted(async () => {
   if (!userStore.user) {
