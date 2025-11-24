@@ -1,57 +1,51 @@
 // eslint.config.mjs
-import pluginVue from 'eslint-plugin-vue';
-import {
-  defineConfigWithVueTs,
-  vueTsConfigs,
-  configureVueProject,
-} from '@vue/eslint-config-typescript';
 import js from '@eslint/js';
 import globals from 'globals';
+import { defineConfig } from 'eslint/config';
+import vuePlugin from 'eslint-plugin-vue';
 import tseslint from 'typescript-eslint';
 
-// Optional: configure the Vue project to adjust the strictness of the rulesets or speed up linting.
-configureVueProject({
-  tsSyntaxInTemplates: true,
-  scriptLangs: ['ts', 'js'],
-  allowComponentTypeUnsafety: true,
-  rootDir: import.meta.dirname,
-});
-
-export default defineConfigWithVueTs(
-  pluginVue.configs['flat/essential'],
-  vueTsConfigs.base,
-  js.configs.recommended,
-
-  // Добавляем конфигурацию TypeScript
-  ...tseslint.configs.recommended,
-
-  // Настройки для TypeScript и Vue файлов
+export default defineConfig([
   {
-    parser: 'vue-eslint-parser',
-    parserOptions: {
-      parser: '@typescript-eslint/parser'
-    },
+    files: ['**/*.{js,mjs,cjs,ts,vue}'],
+    extends: [js.configs.recommended],
     languageOptions: {
       globals: {
         ...globals.browser,
+        ...globals.node,
       },
+      ecmaVersion: 'latest',
+      sourceType: 'module',
     },
-    files: ['**/*.ts', '**/*.vue'],
     rules: {
       'semi': ['error', 'always'],
       'quotes': ['error', 'single', {
         avoidEscape: true,
         allowTemplateLiterals: true
       }],
+    },
+  },
+  ...tseslint.configs.recommended,
+  ...vuePlugin.configs['flat/essential'],
+  {
+    files: ['**/*.vue'],
+    languageOptions: {
+      parserOptions: {
+        parser: tseslint.parser,
+      },
+    },
+    rules: {
+      'semi': ['error', 'always'],
+      'quotes': ['error', 'single'],
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
-          'argsIgnorePattern': '^_',
-          'varsIgnorePattern': '^_',
-          'caughtErrorsIgnorePattern': '^_'
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_'
         }
       ],
-    }
+    },
   },
-);
+]);
