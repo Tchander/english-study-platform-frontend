@@ -2,7 +2,7 @@
   <v-form @submit.prevent="handleSubmit">
     <v-card-title class="text-h5 text-center mb-4">Регистрация</v-card-title>
 
-    <AppInput
+    <UiInput
       v-model="formData.email"
       label="Email"
       type="email"
@@ -10,7 +10,7 @@
       @blur="() => validateField('email')"
     />
 
-    <AppInput
+    <UiInput
       v-model="formData.password"
       label="Password"
       type="password"
@@ -19,7 +19,7 @@
       class="mt-4"
     />
 
-    <AppSelect
+    <UiSelect
       v-model="formData.role"
       label="Role"
       :items="roleOptions"
@@ -27,7 +27,7 @@
       class="mt-4"
     />
 
-    <AppButton
+    <UiButton
       type="submit"
       color="primary"
       :loading="isLoading"
@@ -35,16 +35,16 @@
       class="mt-6"
     >
       Зарегистрироваться
-    </AppButton>
+    </UiButton>
 
     <div class="text-center mt-4">
-      <AppButton
+      <UiButton
         variant="text"
         color="secondary"
         @click="$emit('go-to-login')"
       >
         Назад к входу
-      </AppButton>
+      </UiButton>
     </div>
   </v-form>
 </template>
@@ -55,9 +55,9 @@ import { useUserStore } from '@/stores/user';
 import { useValidation } from '@/composables/useValidation';
 import { registerSchema, type RegisterFormData } from '../authSchemas'
 
-import AppInput from '@/components/ui/AppInput.vue';
-import AppButton from '@/components/ui/AppButton.vue';
-import AppSelect from '@/components/ui/AppSelect.vue';
+import UiInput from '@/components/ui/UiInput';
+import UiButton from '@/components/ui/UiButton';
+import UiSelect from '@/components/ui/UiSelect';
 
 type Emits = {
   (e: 'success'): void;

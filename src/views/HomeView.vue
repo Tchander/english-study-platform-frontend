@@ -19,9 +19,9 @@
       </v-card-text>
 
       <v-card-actions>
-        <AppButton color="error" @click="handleLogout">
+        <UiButton color="error" @click="handleLogout">
           Выйти
-        </AppButton>
+        </UiButton>
       </v-card-actions>
     </v-card>
   </v-container>
@@ -32,7 +32,7 @@ import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 
-import AppButton from '@/components/ui/AppButton.vue';
+import UiButton from '@/components/ui/UiButton';
 
 const userStore = useUserStore();
 const router = useRouter();

@@ -1,8 +1,7 @@
 <template>
   <v-select
     v-bind="$attrs"
-    :model-value="modelValue"
-    @update:model-value="$emit('update:modelValue', $event)"
+    v-model="modelValue"
     :items="items"
     :error-messages="error"
     variant="outlined"
@@ -15,13 +14,9 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  modelValue: string;
-  items: { title: string; value: string }[];
-  error?: string;
-}>();
+import type { UiSelectProps, UiSelectModelValue } from './types';
 
-defineEmits<{
-  'update:modelValue': [value: string];
-}>();
+const { items, error } = defineProps<UiSelectProps>();
+
+const modelValue = defineModel<UiSelectModelValue>();
 </script>

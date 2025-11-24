@@ -1,8 +1,7 @@
 <template>
   <v-text-field
+    v-model="modelValue"
     v-bind="$attrs"
-    :model-value="modelValue"
-    @update:model-value="$emit('update:modelValue', $event)"
     :error-messages="error"
     variant="outlined"
     density="comfortable"
@@ -14,12 +13,9 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  modelValue: string;
-  error?: string;
-}>();
+import { UiInputProps, UiInputModelValue } from './types';
 
-defineEmits<{
-  'update:modelValue': [value: string];
-}>();
+const { error } = defineProps<UiInputProps>()
+
+const modelValue = defineModel<UiInputModelValue>()
 </script>

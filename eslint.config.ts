@@ -43,9 +43,7 @@ export default defineConfigWithVueTs(
         avoidEscape: true,
         allowTemplateLiterals: true
       }],
-      // Отключаем базовое правило no-unused-vars для TypeScript файлов
       'no-unused-vars': 'off',
-      // Включаем TypeScript-specific правило для неиспользуемых переменных
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -56,25 +54,4 @@ export default defineConfigWithVueTs(
       ],
     }
   },
-
-  // Дополнительные настройки для script секций в Vue файлах
-  {
-    files: ['**/*.vue'],
-    rules: {
-      'semi': ['error', 'always'],
-      'quotes': ['error', 'single', {
-        avoidEscape: true,
-        allowTemplateLiterals: true
-      }],
-      'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          'argsIgnorePattern': '^_',
-          'varsIgnorePattern': '^_',
-          'caughtErrorsIgnorePattern': '^_'
-        }
-      ],
-    }
-  }
 );

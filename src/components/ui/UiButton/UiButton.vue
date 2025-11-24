@@ -3,7 +3,7 @@
     v-bind="$attrs"
     :loading="loading"
     :disabled="disabled"
-    @click="$emit('click')"
+    @click="emit('click')"
     class="text-none"
     :color="color"
   >
@@ -12,13 +12,8 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  loading?: boolean;
-  disabled?: boolean;
-  color?: string;
-}>();
+import type { UiButtonEmits, UiButtonProps } from './types';
 
-defineEmits<{
-  click: [];
-}>();
+const emit = defineEmits<UiButtonEmits>();
+const { loading, color, disabled } = defineProps<UiButtonProps>();
 </script>
