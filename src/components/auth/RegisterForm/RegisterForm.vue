@@ -2,33 +2,32 @@
   <v-form @submit.prevent="handleSubmit">
     <v-card-title class="text-h5 text-center mb-4">Регистрация</v-card-title>
 
-    <AppInput
-      v-model="form.email"
+    <UiInput
+      v-model="formData.email"
       label="Email"
       type="email"
       :error="errors.email"
-      required
+      @blur="() => validateField('email')"
     />
 
-    <AppInput
-      v-model="form.password"
-      label="Пароль"
+    <UiInput
+      v-model="formData.password"
+      label="Password"
       type="password"
       :error="errors.password"
-      required
+      @blur="() => validateField('password')"
       class="mt-4"
     />
 
-    <AppSelect
-      v-model="form.role"
-      label="Роль"
+    <UiSelect
+      v-model="formData.role"
+      label="Role"
       :items="roleOptions"
       :error="errors.role"
-      required
       class="mt-4"
     />
 
-    <AppButton
+    <UiButton
       type="submit"
       color="primary"
       :loading="isLoading"
@@ -36,27 +35,29 @@
       class="mt-6"
     >
       Зарегистрироваться
-    </AppButton>
+    </UiButton>
 
     <div class="text-center mt-4">
-      <AppButton
+      <UiButton
         variant="text"
         color="secondary"
         @click="$emit('go-to-login')"
       >
         Назад к входу
-      </AppButton>
+      </UiButton>
     </div>
   </v-form>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { ref } from 'vue';
 import { useUserStore } from '@/stores/user';
+import { useValidation } from '@/composables/useValidation';
+import { registerSchema, type RegisterFormData } from '../authSchemas';
 
-import AppInput from '@/components/ui/AppInput.vue';
-import AppButton from '@/components/ui/AppButton.vue';
-import AppSelect from '@/components/ui/AppSelect.vue';
+import UiInput from '@/components/ui/UiInput';
+import UiButton from '@/components/ui/UiButton';
+import UiSelect from '@/components/ui/UiSelect';
 
 type Emits = {
   (e: 'success'): void;
@@ -73,56 +74,26 @@ const roleOptions = [
   { title: 'Учитель', value: 'teacher' },
 ];
 
-const form = reactive({
+const formData = ref<RegisterFormData>({
   email: '',
   password: '',
-  role: 'student' as 'student' | 'teacher',
+  role: 'student',
 });
 
-const errors = reactive({
-  email: '',
-  password: '',
-  role: '',
-});
-
-const validateForm = (): boolean => {
-  let isValid = true;
-
-  // Сбрасываем ошибки
-  errors.email = '';
-  errors.password = '';
-  errors.role = '';
-
-  if (!form.email) {
-    errors.email = 'Email обязателен';
-    isValid = false;
-  } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-    errors.email = 'Некорректный email';
-    isValid = false;
-  }
-
-  if (!form.password) {
-    errors.password = 'Пароль обязателен';
-    isValid = false;
-  } else if (form.password.length < 6) {
-    errors.password = 'Пароль должен быть не менее 6 символов';
-    isValid = false;
-  }
-
-  if (!form.role) {
-    errors.role = 'Роль обязательна';
-    isValid = false;
-  }
-
-  return isValid;
-};
+const {
+  errors,
+  validate,
+  validateField,
+} = useValidation<RegisterFormData>(registerSchema, formData.value);
 
 const handleSubmit = async () => {
-  if (!validateForm()) return;
+  const isFormValid = await validate();
+
+  if (!isFormValid) return;
 
   try {
     isLoading.value = true;
-    await userStore.register(form.email, form.password, form.role);
+    await userStore.register(formData.value.email, formData.value.password, formData.value.role);
     emit('success');
   } catch (error) {
     // Ошибка уже обработана в store

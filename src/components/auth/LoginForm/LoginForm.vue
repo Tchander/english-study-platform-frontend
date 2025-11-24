@@ -2,24 +2,25 @@
   <v-form @submit.prevent="handleSubmit">
     <v-card-title class="text-h5 text-center mb-4">Вход в систему</v-card-title>
 
-    <AppInput
-      v-model="form.email"
+    <UiInput
+      v-model="formData.email"
       label="Email"
       type="email"
       :error="errors.email"
-      required
+      @blur="() => validateField('email')"
     />
 
-    <AppInput
-      v-model="form.password"
-      label="Пароль"
+    <UiInput
+      v-model="formData.password"
+      label="Password"
       type="password"
       :error="errors.password"
-      required
+      @blur="() => validateField('password')"
+      autocomplete="on"
       class="mt-4"
     />
 
-    <AppButton
+    <UiButton
       type="submit"
       color="primary"
       :loading="isLoading"
@@ -27,26 +28,28 @@
       class="mt-6"
     >
       Войти
-    </AppButton>
+    </UiButton>
 
     <div class="text-center mt-4">
-      <AppButton
+      <UiButton
         variant="text"
         color="secondary"
         @click="$emit('go-to-register')"
       >
         Зарегистрироваться
-      </AppButton>
+      </UiButton>
     </div>
   </v-form>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
+import { ref } from 'vue';
 import { useUserStore } from '@/stores/user';
+import { useValidation } from '@/composables/useValidation';
+import { loginSchema, type LoginFormData } from '../authSchemas';
 
-import AppInput from '@/components/ui/AppInput.vue';
-import AppButton from '@/components/ui/AppButton.vue';
+import UiInput from '@/components/ui/UiInput';
+import UiButton from '@/components/ui/UiButton';
 
 type Emits = {
   (e: 'success'): void;
@@ -58,48 +61,25 @@ const emit = defineEmits<Emits>();
 const userStore = useUserStore();
 const isLoading = ref(false);
 
-const form = reactive({
+const formData = ref<LoginFormData>({
   email: '',
   password: '',
 });
 
-const errors = reactive({
-  email: '',
-  password: '',
-});
-
-const validateForm = (): boolean => {
-  let isValid = true;
-
-  // Сбрасываем ошибки
-  errors.email = '';
-  errors.password = '';
-
-  if (!form.email) {
-    errors.email = 'Email обязателен';
-    isValid = false;
-  } else if (!/\S+@\S+\.\S+/.test(form.email)) {
-    errors.email = 'Некорректный email';
-    isValid = false;
-  }
-
-  if (!form.password) {
-    errors.password = 'Пароль обязателен';
-    isValid = false;
-  } else if (form.password.length < 6) {
-    errors.password = 'Пароль должен быть не менее 6 символов';
-    isValid = false;
-  }
-
-  return isValid;
-};
+const {
+  errors,
+  validate,
+  validateField,
+} = useValidation<LoginFormData>(loginSchema, formData.value);
 
 const handleSubmit = async () => {
-  if (!validateForm()) return;
+  const isFormValid = await validate();
+
+  if (!isFormValid) return;
 
   try {
     isLoading.value = true;
-    await userStore.login(form.email, form.password);
+    await userStore.login(formData.value.email, formData.value.password);
     emit('success');
   } catch (error) {
     // Ошибка уже обработана в store
