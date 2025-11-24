@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useValidation } from '@/composables/useValidation';
 import { loginSchema, type LoginFormData } from '../authSchemas';
@@ -59,7 +59,6 @@ type Emits = {
 const emit = defineEmits<Emits>();
 
 const userStore = useUserStore();
-const isLoading = ref(false);
 
 const formData = ref<LoginFormData>({
   email: '',
@@ -72,19 +71,19 @@ const {
   validateField,
 } = useValidation<LoginFormData>(loginSchema, formData.value);
 
+const isLoading = computed(() => userStore.isLoading);
+
 const handleSubmit = async () => {
   const isFormValid = await validate();
 
   if (!isFormValid) return;
 
   try {
-    isLoading.value = true;
     await userStore.login(formData.value.email, formData.value.password);
     emit('success');
   } catch (error) {
-    // Ошибка уже обработана в store
-  } finally {
-    isLoading.value = false;
+    // Ошибка автоматически обрабатывается в сторе и TanStack Query
+    console.error('Login error:', error);
   }
 };
 </script>

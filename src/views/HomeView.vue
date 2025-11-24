@@ -28,7 +28,6 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
 
@@ -42,16 +41,6 @@ const userRoles = {
   'teacher': 'Учитель',
   'super-admin': 'Главный администратор'
 };
-
-onMounted(async () => {
-  if (!userStore.user) {
-    try {
-      await userStore.fetchProfile();
-    } catch (error) {
-      router.push('/login');
-    }
-  }
-});
 
 const handleLogout = () => {
   userStore.logout();

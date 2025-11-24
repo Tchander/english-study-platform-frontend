@@ -23,6 +23,23 @@ export default defineConfig([
         avoidEscape: true,
         allowTemplateLiterals: true
       }],
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_'
+        }
+      ],
+      indent: [
+        'error',
+        2,
+        {
+          SwitchCase: 1,
+          flatTernaryExpressions: false
+        }
+      ]
     },
   },
   ...tseslint.configs.recommended,

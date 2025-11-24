@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useValidation } from '@/composables/useValidation';
 import { registerSchema, type RegisterFormData } from '../authSchemas';
@@ -67,7 +67,6 @@ type Emits = {
 const emit = defineEmits<Emits>();
 
 const userStore = useUserStore();
-const isLoading = ref(false);
 
 const roleOptions = [
   { title: 'Ученик', value: 'student' },
@@ -86,19 +85,20 @@ const {
   validateField,
 } = useValidation<RegisterFormData>(registerSchema, formData.value);
 
+// Используем computed для loading состояния из стора
+const isLoading = computed(() => userStore.isLoading);
+
 const handleSubmit = async () => {
   const isFormValid = await validate();
 
   if (!isFormValid) return;
 
   try {
-    isLoading.value = true;
     await userStore.register(formData.value.email, formData.value.password, formData.value.role);
     emit('success');
   } catch (error) {
-    // Ошибка уже обработана в store
-  } finally {
-    isLoading.value = false;
+    // Ошибка автоматически обрабатывается в сторе и TanStack Query
+    console.error('Register error:', error);
   }
 };
 </script>
