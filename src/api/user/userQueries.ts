@@ -1,5 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { userApi, type LoginData, type RegisterData } from './userApi';
+import type { AxiosError } from 'axios';
+
+type ApiError = AxiosError<{
+  message?: string;
+  error?: string;
+}>;
 
 // Query keys для инвалидации кэша
 export const userKeys = {
@@ -13,14 +19,14 @@ export const useUserProfile = () => {
     queryKey: userKeys.profile(),
     queryFn: userApi.getProfile,
     enabled: !!localStorage.getItem('auth_token'),
-    retry: (failureCount, error: any) => {
+    retry: (failureCount, error: ApiError) => {
       // Не повторять запрос при 401 ошибке (unauthorized)
       if (error?.response?.status === 401) {
         return false;
       }
       return failureCount < 1;
     },
-    // Важно: не ретраить при монтировании, если есть токен
+    // Не ретраить при монтировании, если есть токен
     retryOnMount: false,
   });
 };
@@ -41,7 +47,7 @@ export const useLogin = () => {
       // Инвалидируем все связанные с пользователем запросы
       queryClient.invalidateQueries({ queryKey: userKeys.all });
     },
-    onError: (error: any) => {
+    onError: (_error: ApiError) => {
       // Очищаем данные при ошибке авторизации
       localStorage.removeItem('auth_token');
       queryClient.setQueryData(userKeys.profile(), null);
@@ -60,7 +66,7 @@ export const useRegister = () => {
       queryClient.setQueryData(userKeys.profile(), data.user);
       queryClient.invalidateQueries({ queryKey: userKeys.all });
     },
-    onError: (error: any) => {
+    onError: (_error: ApiError) => {
       localStorage.removeItem('auth_token');
       queryClient.setQueryData(userKeys.profile(), null);
     },
@@ -72,7 +78,7 @@ export const useLogout = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (): Promise<void> => {
       localStorage.removeItem('auth_token');
     },
     onSuccess: () => {
