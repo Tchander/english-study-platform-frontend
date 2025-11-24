@@ -27,19 +27,20 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore();
+  const token = localStorage.getItem('auth_token');
 
   // Если маршрут требует авторизации
   if (to.meta.requiresAuth) {
-    const token = localStorage.getItem('auth_token');
-
     if (token) {
       // Если пользователь не загружен, но есть токен
       if (!userStore.user) {
         try {
-          await userStore.fetchProfile();
+          // Используем refetchProfile вместо fetchProfile
+          await userStore.refetchProfile();
           next();
         } catch (error) {
           // Если токен невалидный
+          localStorage.removeItem('auth_token');
           next('/login');
         }
       } else {
@@ -51,13 +52,13 @@ router.beforeEach(async (to, from, next) => {
   } else {
     // Если пользователь авторизован, но пытается попасть на login/register
     if (to.name === 'login' || to.name === 'register') {
-      const token = localStorage.getItem('auth_token');
       if (token) {
         if (!userStore.user) {
           try {
-            await userStore.fetchProfile();
+            await userStore.refetchProfile();
             next('/');
           } catch (error) {
+            localStorage.removeItem('auth_token');
             next();
           }
         } else {

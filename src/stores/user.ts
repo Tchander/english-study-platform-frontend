@@ -1,71 +1,68 @@
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
-import { userApi, type User } from '@/api/userApi';
+import { computed } from 'vue';
+import { useUserProfile, useLogin, useRegister, useLogout } from '@/api/user/userQueries';
 
 export const useUserStore = defineStore('user', () => {
-  const user = ref<User | null>(null);
-  const isLoading = ref(false);
-  const error = ref<string | null>(null);
+  // Query hooks
+  const {
+    data: user,
+    isLoading: isProfileLoading,
+    error: profileError,
+    refetch: refetchProfileQuery // Добавляем refetch функцию из useQuery
+  } = useUserProfile();
 
+  const loginMutation = useLogin();
+  const registerMutation = useRegister();
+  const logoutMutation = useLogout();
+
+  // Computed свойства
   const isAuthenticated = computed(() => !!user.value);
 
+  // Объединенные состояния loading
+  const isLoading = computed(() =>
+    isProfileLoading.value ||
+    loginMutation.isPending.value ||
+    registerMutation.isPending.value
+  );
+
+  // Объединенные ошибки
+  const error = computed(() =>
+    profileError.value?.message ||
+    loginMutation.error.value?.message ||
+    registerMutation.error.value?.message ||
+    null
+  );
+
   const login = async (email: string, password: string) => {
-    try {
-      isLoading.value = true;
-      error.value = null;
-      const response = await userApi.login({ email, password });
-      localStorage.setItem('auth_token', response.access_token);
-      user.value = response.user;
-    } catch (err: any) {
-      error.value = err.response?.data?.message || 'Ошибка авторизации';
-      throw err;
-    } finally {
-      isLoading.value = false;
-    }
+    return loginMutation.mutateAsync({ email, password });
   };
 
   const register = async (email: string, password: string, role: 'student' | 'teacher') => {
-    try {
-      isLoading.value = true;
-      error.value = null;
-      const response = await userApi.register({ email, password, role });
-      localStorage.setItem('auth_token', response.access_token);
-      user.value = response.user;
-    } catch (err: any) {
-      error.value = err.response?.data?.message || 'Ошибка регистрации';
-      throw err;
-    } finally {
-      isLoading.value = false;
-    }
-  };
-
-  const fetchProfile = async () => {
-    try {
-      isLoading.value = true;
-      error.value = null;
-      user.value = await userApi.getProfile();
-    } catch (err: any) {
-      error.value = err.response?.data?.message || 'Ошибка загрузки профиля';
-      localStorage.removeItem('auth_token');
-      throw err;
-    } finally {
-      isLoading.value = false;
-    }
+    return registerMutation.mutateAsync({ email, password, role });
   };
 
   const logout = () => {
-    user.value = null;
-    localStorage.removeItem('auth_token');
+    logoutMutation.mutate();
+  };
+
+  // Исправленный метод для принудительного обновления профиля
+  const refetchProfile = async () => {
+    const result = await refetchProfileQuery();
+    return result.data;
   };
 
   return {
+    // Data
     user,
+    // States
     isLoading,
     error,
+    // Computed
     isAuthenticated,
+    // Actions
     login,
     register,
-    fetchProfile,
     logout,
+    refetchProfile,
   };
 });
