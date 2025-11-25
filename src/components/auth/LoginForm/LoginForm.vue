@@ -46,17 +46,13 @@
 import { ref, computed } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useValidation } from '@/composables/useValidation';
-import { loginSchema, type LoginFormData } from '../authSchemas';
+import { loginSchema } from '../authSchemas';
+import type { LoginFormEmits, LoginFormData } from './types';
 
 import UiInput from '@/components/ui/UiInput';
 import UiButton from '@/components/ui/UiButton';
 
-type Emits = {
-  (e: 'success'): void;
-  (e: 'go-to-register'): void;
-}
-
-const emit = defineEmits<Emits>();
+const emit = defineEmits<LoginFormEmits>();
 
 const userStore = useUserStore();
 
@@ -79,10 +75,9 @@ const handleSubmit = async () => {
   if (!isFormValid) return;
 
   try {
-    await userStore.login(formData.value.email, formData.value.password);
+    await userStore.login(formData.value);
     emit('success');
   } catch (error) {
-    // Ошибка автоматически обрабатывается в сторе и TanStack Query
     console.error('Login error:', error);
   }
 };

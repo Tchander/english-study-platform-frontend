@@ -53,30 +53,27 @@
 import { ref, computed } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useValidation } from '@/composables/useValidation';
-import { registerSchema, type RegisterFormData } from '../authSchemas';
+import { registerSchema } from '../authSchemas';
+import { UserRole } from '@/enums/userRoles';
+import type { RegisterFormEmits, RegisterFormData } from './types';
 
 import UiInput from '@/components/ui/UiInput';
 import UiButton from '@/components/ui/UiButton';
 import UiSelect from '@/components/ui/UiSelect';
 
-type Emits = {
-  (e: 'success'): void;
-  (e: 'go-to-login'): void;
-}
-
-const emit = defineEmits<Emits>();
+const emit = defineEmits<RegisterFormEmits>();
 
 const userStore = useUserStore();
 
 const roleOptions = [
-  { title: 'Ученик', value: 'student' },
-  { title: 'Учитель', value: 'teacher' },
+  { title: 'Ученик', value: UserRole.STUDENT},
+  { title: 'Учитель', value: UserRole.TEACHER },
 ];
 
 const formData = ref<RegisterFormData>({
   email: '',
   password: '',
-  role: 'student',
+  role: UserRole.STUDENT,
 });
 
 const {
@@ -85,7 +82,6 @@ const {
   validateField,
 } = useValidation<RegisterFormData>(registerSchema, formData.value);
 
-// Используем computed для loading состояния из стора
 const isLoading = computed(() => userStore.isLoading);
 
 const handleSubmit = async () => {
@@ -94,10 +90,9 @@ const handleSubmit = async () => {
   if (!isFormValid) return;
 
   try {
-    await userStore.register(formData.value.email, formData.value.password, formData.value.role);
+    await userStore.register(formData.value);
     emit('success');
   } catch (error) {
-    // Ошибка автоматически обрабатывается в сторе и TanStack Query
     console.error('Register error:', error);
   }
 };

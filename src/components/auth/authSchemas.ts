@@ -17,14 +17,3 @@ export const registerSchema = loginSchema.shape({
     .required('Роль обязательна')
     .oneOf(['student', 'teacher'], 'Некорректная роль')
 });
-
-export type LoginFormData = {
-  email: string;
-  password: string;
-};
-
-export type RegisterFormData = {
-  email: string;
-  password: string;
-  role: 'student' | 'teacher';
-};

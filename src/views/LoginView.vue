@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import LoginForm from '@/components/auth/LoginForm/LoginForm.vue';
+import LoginForm from '@/components/auth/LoginForm';
 
 const router = useRouter();
 
