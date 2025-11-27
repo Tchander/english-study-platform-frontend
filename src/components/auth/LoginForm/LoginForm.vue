@@ -34,7 +34,7 @@
       <UiButton
         variant="text"
         color="secondary"
-        @click="$emit('go-to-register')"
+        @click="emit('go-to-register')"
       >
         Зарегистрироваться
       </UiButton>
@@ -43,42 +43,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useUserStore } from '@/stores/user';
-import { useValidation } from '@/composables/useValidation';
 import { loginSchema } from '../authSchemas';
-import type { LoginFormEmits, LoginFormData } from './types';
+import { useFormState } from '@/composables/useFormState';
 
 import UiInput from '@/components/ui/UiInput';
 import UiButton from '@/components/ui/UiButton';
+
+import type { LoginFormEmits } from './types';
+import type { LoginData } from '@/stores/user/types';
+import type { AuthResponse } from '@/api/modules/user/types';
 
 const emit = defineEmits<LoginFormEmits>();
 
 const userStore = useUserStore();
 
-const formData = ref<LoginFormData>({
+const formData = ref<LoginData>({
   email: '',
   password: '',
 });
 
 const {
+  handleSubmit,
+  isLoading,
   errors,
-  validate,
-  validateField,
-} = useValidation<LoginFormData>(loginSchema, formData.value);
-
-const isLoading = computed(() => userStore.isLoading);
-
-const handleSubmit = async () => {
-  const isFormValid = await validate();
-
-  if (!isFormValid) return;
-
-  try {
-    await userStore.login(formData.value);
-    emit('success');
-  } catch (error) {
-    console.error('Login error:', error);
+  validateField
+} = useFormState<LoginData, AuthResponse>({
+  formData,
+  submitFunction: userStore.login,
+  validationSchema: loginSchema,
+  loading: userStore.isLoading,
+  onSuccess: (response) => {
+    emit('success', response);
   }
-};
+});
 </script>

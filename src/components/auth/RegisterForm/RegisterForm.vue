@@ -41,7 +41,7 @@
       <UiButton
         variant="text"
         color="secondary"
-        @click="$emit('go-to-login')"
+        @click="emit('go-to-login')"
       >
         Назад к входу
       </UiButton>
@@ -50,16 +50,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useUserStore } from '@/stores/user';
-import { useValidation } from '@/composables/useValidation';
 import { registerSchema } from '../authSchemas';
 import { UserRole } from '@/enums/userRoles';
-import type { RegisterFormEmits, RegisterFormData } from './types';
+import { useFormState } from '@/composables/useFormState';
 
 import UiInput from '@/components/ui/UiInput';
 import UiButton from '@/components/ui/UiButton';
 import UiSelect from '@/components/ui/UiSelect';
+
+import type { RegisterFormEmits } from './types';
+import type { RegisterData } from '@/stores/user/types';
+import type { AuthResponse } from '@/api/modules/user/types';
 
 const emit = defineEmits<RegisterFormEmits>();
 
@@ -70,30 +73,24 @@ const roleOptions = [
   { title: 'Учитель', value: UserRole.TEACHER },
 ];
 
-const formData = ref<RegisterFormData>({
+const formData = ref<RegisterData>({
   email: '',
   password: '',
   role: UserRole.STUDENT,
 });
 
 const {
+  handleSubmit,
+  isLoading,
   errors,
-  validate,
-  validateField,
-} = useValidation<RegisterFormData>(registerSchema, formData.value);
-
-const isLoading = computed(() => userStore.isLoading);
-
-const handleSubmit = async () => {
-  const isFormValid = await validate();
-
-  if (!isFormValid) return;
-
-  try {
-    await userStore.register(formData.value);
-    emit('success');
-  } catch (error) {
-    console.error('Register error:', error);
+  validateField
+} = useFormState<RegisterData, AuthResponse>({
+  formData,
+  submitFunction: userStore.register,
+  validationSchema: registerSchema,
+  loading: userStore.isLoading,
+  onSuccess: (response) => {
+    emit('success', response);
   }
-};
+});
 </script>

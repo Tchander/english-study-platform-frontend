@@ -1,10 +1,6 @@
-export type LoginFormEmits = {
-  success: [];
-  'go-to-register': [];
-};
+import type { AuthResponse } from '@/api/modules/user/types';
 
-// TODO поменять на переменную из стора
-export type LoginFormData = {
-  email: string;
-  password: string;
+export type LoginFormEmits = {
+  success: [response: AuthResponse];
+  'go-to-register': [];
 };

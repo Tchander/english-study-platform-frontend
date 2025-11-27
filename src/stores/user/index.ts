@@ -36,7 +36,7 @@ export const useUserStore = defineStore('user', () => {
     null
   );
 
-  const login = async (payload: LoginData) => {
+  async function login(payload: LoginData) {
     return loginMutation.mutateAsync(payload);
   };
 

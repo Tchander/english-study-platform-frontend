@@ -39,7 +39,8 @@ export default defineConfig([
           SwitchCase: 1,
           flatTernaryExpressions: false
         }
-      ]
+      ],
+      'no-console': ['warn', { allow: ['warn', 'error'] }]
     },
   },
   ...tseslint.configs.recommended,
@@ -63,6 +64,7 @@ export default defineConfig([
           caughtErrorsIgnorePattern: '^_'
         }
       ],
+      'no-console': ['warn', { allow: ['warn', 'error'] }]
     },
   },
 ]);

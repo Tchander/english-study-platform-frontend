@@ -1,13 +1,6 @@
-import { UserRole } from '@/enums/userRoles';
+import type { AuthResponse } from '@/api/modules/user/types';
 
 export type RegisterFormEmits = {
-  success: [];
+  success: [response: AuthResponse];
   'go-to-login': [];
-};
-
-// TODO поменять на переменную из стора
-export type RegisterFormData = {
-  email: string;
-  password: string;
-  role: UserRole.TEACHER | UserRole.STUDENT;
 };
