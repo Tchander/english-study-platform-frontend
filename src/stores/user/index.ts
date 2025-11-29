@@ -1,6 +1,9 @@
 import { defineStore } from 'pinia';
 import { computed } from 'vue';
-import { useUserProfile, useLogin, useRegister, useLogout } from '@/api/user/userQueries';
+import { useApi } from '@/api';
+import type { LoginData, RegisterData } from './types';
+
+const api = useApi();
 
 export const useUserStore = defineStore('user', () => {
   // Query hooks
@@ -9,11 +12,11 @@ export const useUserStore = defineStore('user', () => {
     isLoading: isProfileLoading,
     error: profileError,
     refetch: refetchProfileQuery // Добавляем refetch функцию из useQuery
-  } = useUserProfile();
+  } = api.user.useUserProfile();
 
-  const loginMutation = useLogin();
-  const registerMutation = useRegister();
-  const logoutMutation = useLogout();
+  const loginMutation = api.user.useLogin();
+  const registerMutation = api.user.useRegister();
+  const logoutMutation = api.user.useLogout();
 
   // Computed свойства
   const isAuthenticated = computed(() => !!user.value);
@@ -33,12 +36,12 @@ export const useUserStore = defineStore('user', () => {
     null
   );
 
-  const login = async (email: string, password: string) => {
-    return loginMutation.mutateAsync({ email, password });
+  async function login(payload: LoginData) {
+    return loginMutation.mutateAsync(payload);
   };
 
-  const register = async (email: string, password: string, role: 'student' | 'teacher') => {
-    return registerMutation.mutateAsync({ email, password, role });
+  const register = async (payload: RegisterData) => {
+    return registerMutation.mutateAsync(payload);
   };
 
   const logout = () => {

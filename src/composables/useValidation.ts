@@ -1,8 +1,9 @@
 // src/composables/useValidation.ts
-import { ref, type Ref, type UnwrapNestedRefs } from 'vue';
+import { ref } from 'vue';
+import type { Ref, UnwrapNestedRefs } from 'vue';
 import { type AnyObjectSchema, ValidationError } from 'yup';
 
-export function useValidation<T extends Record<string, any>>(
+export function useValidation<T>(
   schema: AnyObjectSchema,
   formData: UnwrapNestedRefs<T>
 ) {
