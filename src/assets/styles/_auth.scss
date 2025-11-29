@@ -1,0 +1,18 @@
+@use './variables' as *;
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $authBackground;
+}
+
+.auth-form {
+  background: $white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba($black, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
