@@ -46,7 +46,7 @@
 import { ref } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { loginSchema } from '../authSchemas';
-import { useFormState } from '@/composables/useFormState';
+import { useFormState } from '@/composables/useFormState/useFormState';
 
 import UiInput from '@/components/ui/UiInput';
 import UiButton from '@/components/ui/UiButton';

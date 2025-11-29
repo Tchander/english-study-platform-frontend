@@ -16,6 +16,7 @@
       type="password"
       :error="errors.password"
       @blur="() => validateField('password')"
+      autocomplete="on"
       class="mt-4"
     />
 
@@ -54,7 +55,7 @@ import { ref } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { registerSchema } from '../authSchemas';
 import { UserRole } from '@/enums/userRoles';
-import { useFormState } from '@/composables/useFormState';
+import { useFormState } from '@/composables/useFormState/useFormState';
 
 import UiInput from '@/components/ui/UiInput';
 import UiButton from '@/components/ui/UiButton';

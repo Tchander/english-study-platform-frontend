@@ -1,13 +1,15 @@
-// src/composables/useValidation.ts
 import { ref } from 'vue';
-import type { Ref, UnwrapNestedRefs } from 'vue';
+import type { UnwrapNestedRefs } from 'vue';
 import { type AnyObjectSchema, ValidationError } from 'yup';
+
+// Упрощаем тип - используем просто Record со строковыми ключами
+export type ValidationErrors = Record<string, string>;
 
 export function useValidation<T>(
   schema: AnyObjectSchema,
   formData: UnwrapNestedRefs<T>
 ) {
-  const errors = ref<Record<keyof T, string>>({} as Record<keyof T, string>);
+  const errors = ref<ValidationErrors>({});
   const isValid = ref(false);
   const isDirty = ref(false);
 
@@ -19,7 +21,7 @@ export function useValidation<T>(
       isDirty.value = true;
       await schema.validate(formData, { abortEarly: false });
 
-      errors.value = {} as Record<keyof T, string>;
+      errors.value = {};
       isValid.value = true;
       return true;
 
@@ -27,10 +29,11 @@ export function useValidation<T>(
       isValid.value = false;
 
       if (error instanceof ValidationError) {
-        const newErrors = {} as Record<keyof T, string>;
+        const newErrors: ValidationErrors = {};
         error.inner.forEach((err) => {
           if (err.path) {
-            newErrors[err.path as keyof T] = err.message;
+            // Теперь можем безопасно использовать любые строковые ключи
+            newErrors[err.path] = err.message;
           }
         });
         errors.value = newErrors;
@@ -48,8 +51,9 @@ export function useValidation<T>(
       await schema.validateAt(field as string, formData);
 
       // Убираем ошибку для этого поля
-      if (errors.value[field]) {
-        delete errors.value[field];
+      const fieldKey = field as string;
+      if (errors.value[fieldKey]) {
+        delete errors.value[fieldKey];
       }
 
       // Проверяем общую валидность
@@ -57,7 +61,7 @@ export function useValidation<T>(
 
     } catch (error) {
       if (error instanceof ValidationError) {
-        errors.value[field] = error.message;
+        errors.value[field as string] = error.message;
         isValid.value = false;
       }
     }
@@ -74,13 +78,13 @@ export function useValidation<T>(
    * Сброс ошибок и состояния
    */
   const reset = (): void => {
-    errors.value = {} as Record<keyof T, string>;
+    errors.value = {};
     isValid.value = false;
     isDirty.value = false;
   };
 
   return {
-    errors: errors as Ref<Record<keyof T, string>>,
+    errors,
     isValid,
     isDirty,
     validate,
