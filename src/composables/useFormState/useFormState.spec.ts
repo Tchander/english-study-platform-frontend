@@ -6,7 +6,8 @@ import { useFormState } from './useFormState';
 enum ERRORS {
   EMAIL_REQUIRED = 'Email обязателен',
   EMAIL_INVALID = 'Некорректный формат email',
-  NAME_REQUIRED = 'Имя обязательно'
+  NAME_REQUIRED = 'Имя обязательно',
+  API_ERROR = 'API Error'
 }
 
 const formSchema = yup.object({
@@ -74,7 +75,7 @@ describe('useFormState', () => {
       name: 'John',
       email: 'john@example.com'
     });
-    const submissionError = new Error('API Error');
+    const submissionError = new Error(ERRORS.API_ERROR);
     mockSubmit.mockRejectedValue(submissionError);
 
     const { handleSubmit } = useFormState({
@@ -83,6 +84,6 @@ describe('useFormState', () => {
       submitFunction: mockSubmit,
     });
 
-    await expect(handleSubmit()).rejects.toThrow('API Error');
+    await expect(handleSubmit()).rejects.toThrow(ERRORS.API_ERROR);
   });
 });
