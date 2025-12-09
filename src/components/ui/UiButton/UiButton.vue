@@ -1,11 +1,11 @@
 <template>
   <v-btn
     v-bind="$attrs"
+    class="text-none"
     :loading="loading"
     :disabled="disabled"
-    @click="emit('click')"
-    class="text-none"
     :color="color"
+    @click="emit('click')"
   >
     <slot />
   </v-btn>

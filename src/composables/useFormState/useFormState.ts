@@ -1,4 +1,4 @@
-import { useValidation } from './useValidation';
+import { useValidation, type ValidationErrors } from '../useValidation/useValidation';
 import { computed } from 'vue';
 import type { Ref, ComputedRef, UnwrapNestedRefs } from 'vue';
 import type { AnyObjectSchema } from 'yup';
@@ -13,7 +13,7 @@ export type UseFormStateOptions<T, R = void> = {
 
 export type UseFormStateReturn<T> = {
   handleSubmit: () => Promise<void>;
-  errors: Ref<Record<keyof T, string>>;
+  errors: Ref<ValidationErrors>;
   validateField: (field: keyof T) => Promise<void>;
   resetValidation: () => void;
   isLoading: ComputedRef<boolean | undefined>;
